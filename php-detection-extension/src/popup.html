@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PHP Detector - Detection Results</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      margin: 0;
+      padding: 20px;
+      min-width: 300px;
+      background: #f5f5f5;
+    }
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .php-logo {
+      color: #6173f2;
+      font-size: 48px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .status {
+      font-size: 18px;
+      font-weight: bold;
+    }
+    .status.php {
+      color: #ff6b6b;
+    }
+    .status.not-php {
+      color: #4ecdc4;
+    }
+    .info-panel {
+      background: white;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .info-section {
+      margin-bottom: 16px;
+    }
+    .info-section:last-child {
+      margin-bottom: 0;
+    }
+    .info-label {
+      font-size: 12px;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .info-value {
+      font-size: 14px;
+      color: #333;
+      margin-top: 4px;
+    }
+    .methods-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .methods-list li {
+      padding: 8px 0;
+      border-bottom: 1px solid #eee;
+    }
+    .methods-list li:last-child {
+      border-bottom: none;
+    }
+    .method-name {
+      font-weight: 600;
+      color: #6173f2;
+    }
+    .method-conf {
+      float: right;
+      font-size: 12px;
+      color: #666;
+    }
+    .security-hint {
+      background: #fff3cd;
+      border: 1px solid #ffeeba;
+      border-radius: 4px;
+      padding: 12px;
+      margin-top: 16px;
+    }
+    .security-hint h4 {
+      margin: 0 0 8px 0;
+      color: #856404;
+    }
+    .security-hint p {
+      margin: 0;
+      font-size: 13px;
+      color: #856404;
+    }
+    .error {
+      color: #dc3545;
+      text-align: center;
+      padding: 20px;
+    }
+    .refresh {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      background: #6173f2;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    .refresh:hover {
+      background: #4a5cc5;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="php-logo">PHP</div>
+      <div class="status" id="status">Checking...</div>
+    </div>
+    
+    <div class="info-panel" id="infoPanel" style="display: none;">
+      <div class="info-section">
+        <div class="info-label">URL</div>
+        <div class="info-value" id="url">-</div>
+      </div>
+      
+      <div class="info-section">
+        <div class="info-label">Detection Method</div>
+        <div class="info-value" id="detectionMethod">-</div>
+      </div>
+      
+      <div class="info-section">
+        <div class="info-label">Detected Indicators</div>
+        <ul class="methods-list" id="methodsList">
+          <!-- Methods will be injected here -->
+        </ul>
+      </div>
+      
+      <div class="info-section">
+        <div class="info-label">Detection Time</div>
+        <div class="info-value" id="detectionTime">-</div>
+      </div>
+    </div>
+    
+    <div class="security-hint" id="securityHint" style="display: none;">
+      <h4>⚠️ Security Consideration</h4>
+      <p>This site appears to be running PHP. Ensure the PHP installation is up to date and properly configured to avoid security vulnerabilities.</p>
+    </div>
+    
+    <div class="error" id="error" style="display: none;">
+      <p id="errorMessage">Error detecting PHP backend</p>
+      <button class="refresh" onclick="location.reload()">Try Again</button>
+    </div>
+  </div>
+  
+  <script>
+    // Get detection results from background script
+    const params = new URLSearchParams(window.location.search);
+    const url = params.get('url') || window.location.href;
+    const detectionResult = JSON.parse(params.get('result') || 'null');
+    
+    // Display results
+    function displayResults() {
+      const statusEl = document.getElementById('status');
+      const infoPanel = document.getElementById('infoPanel');
+      const urlEl = document.getElementById('url');
+      const methodEl = document.getElementById('detectionMethod');
+      const methodsList = document.getElementById('methodsList');
+      const timeEl = document.getElementById('detectionTime');
+      const securityHint = document.getElementById('securityHint');
+      const error = document.getElementById('error');
+      
+      urlEl.textContent = url;
+      
+      if (!detectionResult) {
+        error.style.display = 'block';
+        return;
+      }
+      
+      if (detectionResult.isPHP) {
+        statusEl.textContent = 'PHP Detected';
+        statusEl.className = 'status php';
+        
+        infoPanel.style.display = 'block';
+        securityHint.style.display = 'block';
+        
+        // Determine primary detection method
+        const highConfidenceMethods = detectionResult.methods.filter(m => m.confidence === 'high');
+        methodEl.textContent = highConfidenceMethods.length > 0 
+          ? highConfidenceMethods[0].method 
+          : detectionResult.methods[0]?.method || 'Multiple';
+        
+        // List all detection methods
+        methodsList.innerHTML = detectionResult.methods
+          .map(m => `<li>
+            <span class="method-name">${m.method}</span>
+            <span class="method-conf">${m.confidence.toUpperCase()} confidence</span>
+          </li>`)
+          .join('');
+        
+        // Show detection time
+        const time = new Date(detectionResult.timestamp);
+        timeEl.textContent = time.toLocaleTimeString();
+      } else {
+        statusEl.textContent = 'No PHP Detected';
+        statusEl.className = 'status not-php';
+        securityHint.style.display = 'none';
+      }
+    }
+    
+    displayResults();
+  </script>
+</body>
+</html>
