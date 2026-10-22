@@ -38,10 +38,14 @@ const detectionMethods = {
       /<h1>PHP Version/i,
       /PHP Extension\s*(\d+)/i,
       /<title>PHP\s*\\?@/i,
-      /<a href="[^"]*\?PHP[A-Z0-9]+=/i
+      /<a href="[^"]*\?PHP[A-Z0-9]+=/i,
+      /wp-content\/.*\.php/i,
+      /wp-includes\/.*\.php/i,
+      /<\/body>\s*<!--\s*PHP\s*detected\s*-->/i
     ];
     
     const html = document.documentElement.outerHTML;
+
     for (const pattern of phpPatterns) {
       if (pattern.test(html)) {
         return { method: 'responsePatterns', confidence: 'high', pattern: pattern.source };
@@ -143,10 +147,12 @@ function getResponseHeaders() {
 }
 
 // Run detection after page loads
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', executeDetection);
-} else {
-  executeDetection();
+if (typeof document !== 'undefined') {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', executeDetection);
+  } else {
+    executeDetection();
+  }
 }
 
 // Export for testing

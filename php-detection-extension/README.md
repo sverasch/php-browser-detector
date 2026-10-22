@@ -1,6 +1,6 @@
 # PHP Detector Browser Extension
 
-A browser extension for security research that detects PHP backends across Chrome, Firefox, and Safari.
+A browser extension for security research that detects PHP backends across Chrome and Firefox.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -8,122 +8,74 @@ A browser extension for security research that detects PHP backends across Chrom
 
 This extension helps security researchers identify PHP backends by analyzing HTTP headers, file extensions, response patterns, and more. When PHP is detected, a red PHP logo appears in the browser toolbar.
 
+## Installation & Loading
+
+Since this is a development version, you must load it as an "unpacked" extension.
+
+### 🌐 Google Chrome / Microsoft Edge
+1. Open the extensions page: `chrome://extensions` (or `edge://extensions`).
+2. Enable **"Developer mode"** using the toggle in the top right corner.
+3. Click the **"Load unpacked"** button.
+4. Select the `php-detection-extension/src` directory.
+
+### 🦊 Mozilla Firefox
+1. Open the debugging page: `about:debugging#/runtime/this-firefox`.
+2. Click the **"Load Temporary Add-on..."** button.
+3. Navigate to the `php-detection-extension/src` folder and select the `manifest.json` file.
+   *Note: Temporary add-ons are removed when Firefox is restarted.*
+
 ## How to Use
 
-### Installation
-
-#### For Development/Testing
-
-1. **Load the extension in your browser:**
-
-   **Chrome/Edge:**
-   - Open `chrome://extensions`
-   - Enable "Developer mode" (top right)
-   - Click "Load unpacked"
-   - Select the extension directory
-
-   **Firefox:**
-   - Open `about:debugging#/runtime/this-firefox`
-   - Click "Load Temporary Add-on..."
-   - Select the `manifest.json` file in this directory
-
-   **Safari:**
-   - Enable Develop menu: Safari > Settings > Advanced > Show Develop menu
-   - Develop > Show Extension Builder
-   - Click "+" to add a new extension
-   - Select this extension directory
-
-2. **The extension is now active!** Visit any website to see the detection in action.
-
-### Basic Usage
-
-1. **Visit a website** - The extension automatically detects PHP in the background
-2. **Look for the red PHP logo** in your browser toolbar when PHP is detected
-3. **Click the icon** to see detailed detection information:
-   - Detection methods used
-   - Confidence level
-   - Detected indicators
-   - Detection timestamp
-
-4. **Security hints** - When PHP is detected, you'll see basic security recommendations
+1. **Visit a website**: The extension automatically analyzes the site in the background.
+2. **Check the Toolbar**: A red PHP logo will appear in your browser toolbar if PHP is detected.
+3. **View Details**: Click the extension icon to open the popup and see:
+   - Which detection methods were triggered.
+   - The confidence level of the detection.
+   - Specific indicators found.
+   - Basic security recommendations for PHP environments.
 
 ## Features
 
-- **Multi-method detection**: HTTP headers, file extensions, response patterns
-- **Cross-browser support**: Chrome, Firefox, Safari
-- **Active probing**: Additional detection techniques when needed
-- **Security hints**: Basic recommendations for detected PHP sites
-- **Ephemeral storage**: No tracking, local detection only
+- **Multi-method detection**: analyzes HTTP headers, file extensions, and response patterns.
+- **Cross-browser support**: Fully compatible with Chrome and Firefox (Manifest V3).
+- **Privacy-focused**: No analytics, no telemetry, and no user tracking. All detection happens locally in your browser.
 
-## Building
+## Development
 
+### Prerequisites
+- [Node.js](https://nodejs.org/)
+
+### Setup & Build
 ```bash
+# Install dependencies
 npm install
+
+# Build the extension
 npm run build
+
+# Run linting
+npm run lint
 ```
 
-## Testing
-
-## Testing
-
-Run the test suite:
-
+### Testing
 ```bash
+# Run the test suite
 npm test
+
+# Run tests in watch mode
 npm run test:watch
-```
-
-### Test Coverage
-
-The extension includes:
-
-- **Unit tests**: Detection logic for each method
-- **Integration tests**: Known PHP site validation
-- **Synthetic tests**: Custom test cases
-
-## Usage
-
-1. **Automatic Detection** - The extension runs automatically when you visit a page
-2. **Check the toolbar** - Look for the red PHP logo when PHP is detected
-3. **View details** - Click the icon to see detection methods and confidence level
-4. **Security hints** - Review basic security recommendations for PHP sites
-
-## Configuration
-
-Basic settings are available through the extension popup:
-
-- Enable/disable detection methods
-- View detection details
-
-## Privacy
-
-- No analytics or telemetry
-- Ephemeral data storage (not persisted)
-- No user tracking
-- All detection happens locally in your browser
-
-## Building
-
-```bash
-npm install
-npm run build
 ```
 
 ## License
 
-MIT License - see LICENSE file for details.
+MIT License - see [LICENSE](LICENSE) file for details.
 
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## Acknowledgments
-
-- PHP logo and branding used for detection purposes
-- Detection methods based on common PHP deployment patterns
+1. Fork the repository.
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`).
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`).
+4. Push to the branch (`git push origin feature/AmazingFeature`).
+5. Open a Pull Request.
